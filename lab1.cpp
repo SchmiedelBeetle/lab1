@@ -1,4 +1,4 @@
-//modified by:
+//modified by: Christian Schmiedel
 //date:
 //
 //original author: Gordon Griesel
