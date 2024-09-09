@@ -8,7 +8,6 @@
 //This program needs some refactoring.
 //We will do this in class together.
 //
-//
 #include <iostream>
 using namespace std;
 #include <stdio.h>
@@ -29,6 +28,7 @@ public:
     float w;
     float vel;
     float pos[2];
+    float color[3]; //adds color int
     Global() {
         xres = 400;
         yres = 200;
@@ -36,6 +36,9 @@ public:
         vel = 30.0f;
         pos[0] = 0.0f + w;
         pos[1] = yres / 2.0f;
+        color[0] = yres / 2.0f; //starting color blue
+        color[1] = 0.0f;
+        color[2] = 1.0f;
     }
 } g;
 
@@ -240,7 +243,7 @@ void init_opengl(void)
     //Set 2D mode (no perspective)
     glOrtho(0, g.xres, 0, g.yres, -1, 1);
     //
-    //initialize the model view matrix 
+    //initialize the model view matrix
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     //Set the screen background color
@@ -250,15 +253,35 @@ void init_opengl(void)
 
 void physics()
 {
-    //No physics yet.
+    static int bounceCount = 0;
+    static int frameCount = 0;
+
+    if (g.xres < g.w * 2) {
+        return; //box dissapear if window too small
+}
+
     g.pos[0] += g.vel;
-    if (g.pos[0] >= (g.xres-g.w)) {
-        g.pos[0] = (g.xres-g.w);
+
+    if (g.pos[0] >= (g.xres - g.w) || g.pos[0] <= g.w) {
         g.vel = -g.vel;
+        bounceCount++;
     }
-    if (g.pos[0] <= g.w) {
-        g.pos[0] = g.w;
-        g.vel = -g.vel;
+
+    frameCount++;
+
+    if (frameCount % 60 == 0) { // Adjust color every 60 frames
+        float rate = (float)bounceCount / frameCount;
+        if (rate > 0.05f) { // Higher rate -> red
+            g.color[0] = 1.0f;
+            g.color[1] = 0.0f;
+            g.color[2] = 0.0f;
+        } else { // Lower rate -> blue
+            g.color[0] = 0.0f;
+            g.color[1] = 0.0f;
+            g.color[2] = 1.0f;
+        }
+        bounceCount = 0;
+        frameCount = 0;
     }
 }
 
@@ -266,9 +289,12 @@ void render()
 {
     //
     glClear(GL_COLOR_BUFFER_BIT);
-    //draw the box
+    if (g.xres < g.w *2) {
+        return; //dont render if too small
+}
+
     glPushMatrix();
-    glColor3ub(100, 120, 220);
+    glColor3f(g.color[0], g.color[1], g.color[2]);
     glTranslatef(g.pos[0], g.pos[1], 0.0f);
     glBegin(GL_QUADS);
         glVertex2f(-g.w, -g.w);
@@ -278,3 +304,10 @@ void render()
     glEnd();
     glPopMatrix();
 }
+
+~                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+~                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+~                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+~                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+~                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+~                                                                                  
